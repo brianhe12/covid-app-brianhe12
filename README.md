@@ -3,3 +3,4 @@ codvid-app-brianhe12 created by GitHub Classroom
 
 # npm dependencies
 npm install react-native-maps --save-exact
+expo install expo-permissions
