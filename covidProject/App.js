@@ -15,21 +15,34 @@ export default class App extends React.Component {
     if (status !== 'granted') {
       const response = await Permissions.askAsync(Permissions.LOCATION)
     }
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude },),
+      (error) => console.log('Error:', error)
+    )
   }
   
   render() {
+    const { latitude, longitude } = this.state
+    if (latitude) {
+      return (
+        <MapView
+        initialRegion={{
+          latitude,
+          longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        style={{ flex: 1}}
+        showsUserLocation
+      />
+      );
+    }
+    
     return (
-      <MapView
-      initialRegion={{
-        latitude: 37.78825,
-        longitude: -122.4324,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      }}
-      style={{ flex: 1}}
-      showsUserLocation
-    />
-    );
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>We need your location permission!</Text>
+      </View>
+    )
   }
 }
 
