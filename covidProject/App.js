@@ -3,42 +3,49 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import MapView from 'react-native-maps';
 import * as Permissions from 'expo-permissions';
 import { ToastAndroid } from 'react-native';
+import DatePicker from 'react-native-datepicker';
 
 export default class App extends React.Component {
-  state = {
-    latitude: null,
-    longitude: null,
-    testing: 100,
-    markers: [{
-      title: 'United States of America',
-      Slug: "united-states",
-      coordinates: {
-        latitude: 39.381266,
-        longitude: -97.922211
+  constructor(props){
+    super(props);
+    this.state = {
+      date:"15-05-2020",
+      latitude: null,
+      longitude: null,
+      testing: 100,
+      markers: [{
+        title: 'United States of America',
+        slug: "united-states",
+        coordinates: {
+          latitude: 39.381266,
+          longitude: -97.922211
+        },
+        coronavirus: {
+          Confirmed: "739,988",
+          Deaths: "38,928",
+          Recovered: "66,357",
+        }
       },
-      coronavirus: {
-        "Confirmed": "739,988",
-        "Deaths": "38,928",
-        "Recovered": "66,357",
-      }
-    },
-    {
-      title: 'Canada',
-      Slug: "canada",
-      coordinates: {
-        latitude: 55.585901,
-        longitude: -105.750596
-      },  
-      coronavirus: {
-        "Confirmed": "120,302",
-        "Deaths": "203,102",
-        "Recovered": "480,102",
-      }
-    }]
+      {
+        title: 'Canada',
+        slug: "canada",
+        coordinates: {
+          latitude: 55.585901,
+          longitude: -105.750596
+        },  
+        coronavirus: {
+          Confirmed: "120,302",
+          Deaths: "203,102",
+          Recovered: "480,102",
+        }
+      }]
+    }
+    this.handlePress = this.handlePress.bind(this)
   }
 
-  handlePress() { 
-    ToastAndroid.show("Charmander", ToastAndroid.SHORT);
+  handlePress(country) { 
+    //TODO: fetch coronavirus data for a specific country and update state accordingly
+    ToastAndroid.show(country, ToastAndroid.SHORT);
     const newIds = this.state.markers.slice() //copy the array
     newIds[0].coronavirus.Confirmed = "0"
     this.setState({markers: newIds})
@@ -76,10 +83,9 @@ export default class App extends React.Component {
           >
             {this.state.markers.map(marker => (
               <MapView.Marker
-                onPress={this.handlePress.bind(this)}
+                onPress={() => this.handlePress(marker.slug)}
                 coordinate={marker.coordinates}
-                title={marker.title}
-                description={marker.coronavirus.Confirmed + "\n" + marker.coronavirus.Recovered}>
+                pinColor={'turquoise'}>
                   <MapView.Callout>
                   <View style={styles.marker}>
                     <Text style={{fontWeight: 'bold'}}> {marker.title}</Text>
@@ -91,12 +97,36 @@ export default class App extends React.Component {
               </MapView.Marker> 
             ))}
           </MapView>
-          <Button
-            onPress={() => this._handlePress()}
-            title="Press Me"
-          >
-            Press Me
-          </Button>
+          <DatePicker
+          style={{
+            width: 250, 
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+          }}
+          date={this.state.date} //initial date from state
+          mode="date" //The enum of date, datetime and time
+          placeholder="select date"
+          format="DD-MM-YYYY"
+          minDate="22-01-2020"
+          maxDate="18-04-2020"
+          confirmBtnText="Confirm"
+          cancelBtnText="Cancel"
+          customStyles={{
+            dateIcon: {
+              position: 'absolute',
+              left: 0,
+              top: 4,
+              marginLeft: 0
+            },
+            dateInput: {
+              marginLeft: 36
+            }
+          }}
+          onDateChange={(date) => {
+            this.setState({date: date})
+          }}
+        />
         </View>
       );
     }
