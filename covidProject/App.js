@@ -559,8 +559,7 @@ export default class App extends React.Component {
                 // onPress={() => this.handlePress(marker.slug,marker.key)}
                 coordinate={marker.coordinates}
                 pinColor={'turquoise'}
-                opacity={0.85}
-                flat={true}>
+                opacity={0.85}>
                   <MapView.Callout>
                   <View style={styles.marker}>
                     <Text style={{fontWeight: 'bold',fontFamily: 'sans-serif-light'}}> {marker.title}</Text>
