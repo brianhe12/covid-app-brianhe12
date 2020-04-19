@@ -12,7 +12,6 @@ export default class App extends React.Component {
       date:"09-04-2020",
       latitude: null,
       longitude: null,
-      testing: 100,
       markers: [{
         title: 'United States of America',
         key: 0,
@@ -482,7 +481,6 @@ export default class App extends React.Component {
   }
 
   handlePress(country,key) { 
-    ToastAndroid.show(country, ToastAndroid.SHORT);
     var newDate = this.state.date.slice(6,10) + '-' + this.state.date.slice(3,5) + '-' + this.state.date.slice(0,2)
     
     fetch('https://api.covid19api.com/total/country/' + country, {
@@ -516,9 +514,12 @@ export default class App extends React.Component {
       ({ coords: { latitude, longitude } }) => this.setState({ latitude, longitude },),
       (error) => console.log('Error:', error)
     )
-
-    console.log(this.state.testing)
-    ToastAndroid.show('Pikachu', ToastAndroid.SHORT);
+    
+    //Initalize cases
+    for(var i = 0; i < this.state.markers.length; i++) {
+      var obj = this.state.markers[i];
+      this.handlePress(obj.slug,obj.key)
+    }
   }
   
   render() {
@@ -580,6 +581,11 @@ export default class App extends React.Component {
           }}
           onDateChange={(date) => {
             this.setState({date: date})
+            //Reinitalize cases for picked date
+            for(var i = 0; i < this.state.markers.length; i++) {
+              var obj = this.state.markers[i];
+              this.handlePress(obj.slug,obj.key)
+            }
           }}
         />
         </View>
