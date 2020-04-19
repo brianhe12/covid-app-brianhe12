@@ -9,6 +9,11 @@ export default class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      worldTotal: {
+        TotalConfirmed: "0",
+        TotalDeaths: "0",
+        TotalRecovered: "0",
+      },
       date:"09-04-2020",
       latitude: null,
       longitude: null,
@@ -495,9 +500,9 @@ export default class App extends React.Component {
             if (obj.Date.slice(0,10) == newDate){
               // Update coronavirus state for specific country (identified by key)
               const newIds = this.state.markers.slice() //copy the array
-              newIds[key].coronavirus.Confirmed = obj.Confirmed.toString()
-              newIds[key].coronavirus.Deaths = obj.Deaths.toString()
-              newIds[key].coronavirus.Recovered = obj.Recovered.toString()
+              newIds[key].coronavirus.Confirmed = obj.Confirmed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              newIds[key].coronavirus.Deaths = obj.Deaths.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              newIds[key].coronavirus.Recovered = obj.Recovered.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
               this.setState({markers: newIds})
             }
         }
@@ -520,6 +525,19 @@ export default class App extends React.Component {
       var obj = this.state.markers[i];
       this.handlePress(obj.slug,obj.key)
     }
+
+    fetch('https://api.covid19api.com/world/total', {
+         method: 'GET'
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+          responseJson.TotalConfirmed = responseJson.TotalConfirmed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          responseJson.TotalDeaths = responseJson.TotalDeaths.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          responseJson.TotalRecovered = responseJson.TotalRecovered.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          this.setState({worldTotal: responseJson})
+      })  
+
+    ToastAndroid.show("Stay Home, Stay Safe!", ToastAndroid.SHORT);
   }
   
   render() {
@@ -528,26 +546,27 @@ export default class App extends React.Component {
       return (
         <View style={{ flex: 1}}>
           <MapView
-          initialRegion={{
+            initialRegion={{
             latitude,
             longitude,
             latitudeDelta: 100,
             longitudeDelta: 100,
-          }}
-          style={{ flex: 1}}
-          showsUserLocation
-          >
+            }}
+            style={{ flex: 1}}
+            showsUserLocation>
             {this.state.markers.map(marker => (
               <MapView.Marker
-                onPress={() => this.handlePress(marker.slug,marker.key)}
+                // onPress={() => this.handlePress(marker.slug,marker.key)}
                 coordinate={marker.coordinates}
-                pinColor={'turquoise'}>
+                pinColor={'turquoise'}
+                opacity={0.85}
+                flat={true}>
                   <MapView.Callout>
                   <View style={styles.marker}>
-                    <Text style={{fontWeight: 'bold'}}> {marker.title}</Text>
-                    <Text> Confirmed: {marker.coronavirus.Confirmed} </Text>
-                    <Text> Deaths: {marker.coronavirus.Deaths}</Text>
-                    <Text> Recovered: {marker.coronavirus.Recovered}</Text>
+                    <Text style={{fontWeight: 'bold',fontFamily: 'sans-serif-light'}}> {marker.title}</Text>
+                    <Text style={{fontFamily: 'sans-serif-light'}}> Confirmed: {marker.coronavirus.Confirmed} </Text>
+                    <Text style={{fontFamily: 'sans-serif-light'}}> Deaths: {marker.coronavirus.Deaths}</Text>
+                    <Text style={{fontFamily: 'sans-serif-light'}}> Recovered: {marker.coronavirus.Recovered}</Text>
                   </View>
                 </MapView.Callout>
               </MapView.Marker> 
@@ -588,6 +607,29 @@ export default class App extends React.Component {
             }
           }}
         />
+        <View
+        style={{
+          width: 300,
+          position: 'absolute',
+          top: 50,
+          left: 20,
+        }}>
+          <Text style={styles.worldTotal}>World Total</Text>
+          <Text style={styles.labelText}>Confirmed: </Text>
+          <Text style={styles.labelText}>Deaths: </Text>
+          <Text style={styles.labelText}>Recovered: </Text>
+        </View>
+        <View
+        style={{
+          width: 300,
+          position: 'absolute',
+          top: 96,
+          left: 110,
+        }}>
+          <Text style={{fontFamily: 'sans-serif-light',color: 'darkslategrey ',fontWeight: 'bold'}}>{this.state.worldTotal.TotalConfirmed}</Text>
+          <Text style={{fontFamily: 'sans-serif-light',color: 'crimson',fontWeight: 'bold'}}>{this.state.worldTotal.TotalDeaths}</Text>
+          <Text style={{fontFamily: 'sans-serif-light',color: 'darkgreen',fontWeight: 'bold'}}>{this.state.worldTotal.TotalRecovered}</Text>
+        </View>
         </View>
       );
     }
@@ -609,7 +651,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   marker: {
-    height: 90,
+    height: 100,
     width: 200,
+    padding: 5,
+  },
+  labelText: {
+    fontFamily: 'sans-serif-light',
+  },
+  worldTotal: {
+    fontFamily: 'sans-serif-light',
+    fontSize: 30,
   }
 });
