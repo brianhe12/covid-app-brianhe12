@@ -625,7 +625,7 @@ export default class App extends React.Component {
           top: 96,
           left: 110,
         }}>
-          <Text style={{fontFamily: 'sans-serif-light',color: 'darkslategrey ',fontWeight: 'bold'}}>{this.state.worldTotal.TotalConfirmed}</Text>
+          <Text style={{fontFamily: 'sans-serif-light',color: 'darkslategray',fontWeight: 'bold'}}>{this.state.worldTotal.TotalConfirmed}</Text>
           <Text style={{fontFamily: 'sans-serif-light',color: 'crimson',fontWeight: 'bold'}}>{this.state.worldTotal.TotalDeaths}</Text>
           <Text style={{fontFamily: 'sans-serif-light',color: 'darkgreen',fontWeight: 'bold'}}>{this.state.worldTotal.TotalRecovered}</Text>
         </View>
@@ -635,7 +635,7 @@ export default class App extends React.Component {
     else {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>We need your location permission!</Text>
+          <Text style={styles.labelText}>We need your location permission!</Text>
         </View>
       )
     }
