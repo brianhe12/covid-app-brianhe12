@@ -14,7 +14,7 @@ export default class App extends React.Component {
         TotalDeaths: "0",
         TotalRecovered: "0",
       },
-      date:"09-04-2020",
+      date:"23-04-2020",
       latitude: null,
       longitude: null,
       markers: [{
